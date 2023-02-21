@@ -1,8 +1,8 @@
 // creating the world and how units interact with it
 
 use crate::{
-    units::{Civilian, Distance, Soldier, Team},
-    MyResult,
+    units::{Civilian, Soldier, Team},
+    Distance, MyResult,
 };
 
 #[derive(Default, Debug, Clone)]
@@ -122,6 +122,10 @@ impl Map {
         self.add_soldier(starting_soldier, starting_cell)?;
         self.add_civilian(starting_civilian, starting_cell)?;
         Ok(())
+    }
+
+    pub fn live(self) -> bool {
+        true
     }
 }
 

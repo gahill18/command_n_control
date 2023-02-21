@@ -1,9 +1,8 @@
-use crate::{map::Cell, MyResult};
+use crate::{map::Cell, Distance, MyResult};
 
 // For moveable/controlable units
 pub type Name = String;
 pub type Health = i32;
-pub type Distance = usize;
 pub type Strength = i32;
 
 #[derive(Default, Debug, Clone, Copy)]
@@ -186,3 +185,5 @@ impl Moveable for Civilian {
         target.mut_add_civilian(self)
     }
 }
+
+pub enum Command {}

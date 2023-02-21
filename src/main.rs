@@ -1,10 +1,11 @@
 use crate::map::Map;
-use crate::units::*;
+use crate::units::{Command, Team};
 
 pub mod map;
 pub mod units;
 
 type MyResult<T> = Result<T, String>;
+pub type Distance = usize;
 
 // initialize the game
 fn init_game(size_x: Distance, size_y: Distance) -> MyResult<Map> {
@@ -16,8 +17,25 @@ fn init_game(size_x: Distance, size_y: Distance) -> MyResult<Map> {
     Ok(grid)
 }
 
+fn get_command() -> MyResult<Command> {
+    todo!()
+}
+
+fn gameloop(board: Map) -> Option<Map> {
+    let cmd = get_command();
+    Some(board)
+}
+
 fn main() -> MyResult<()> {
-    let board = init_game(5, 5)?;
-    println!("{}", board);
+    let mut board: Map = init_game(5, 5)?;
+    let mut gameover = false;
+
+    while !gameover {
+        match gameloop(board.clone()) {
+            Some(new_board) => board = new_board,
+            None => gameover = true,
+        }
+    }
+
     Ok(())
 }
