@@ -1,105 +1,57 @@
+use crate::players::{Bot, Player, Turns, *};
+use crate::units::*;
 use bevy::prelude::*;
+
+pub mod players;
+pub mod units;
+
+const MISSING_TEXTURE: Color = Color::rgb(0.9, 0.0, 0.9);
+const BACKGROUND_COLOR: Color = Color::rgb(0.9, 0.9, 0.9);
+
+const CELL_SIZE: Vec3 = Vec3::new(90.0, 90.0, 0.0);
+const UNIT_SIZE: Vec3 = Vec3::new(60.0, 60.0, 0.0);
+const FRIENDLY_COLOR: Color = Color::rgb(0.3, 0.7, 0.3);
+const ENEMY_COLOR: Color = Color::rgb(0.7, 0.3, 0.3);
 
 fn main() {
     App::new()
         .add_plugins(DefaultPlugins)
+        .add_startup_system(setup)
+        .insert_resource(Turns::init())
+        .insert_resource(ClearColor(BACKGROUND_COLOR))
         .add_plugin(Player)
+        .add_plugin(Bot)
+        .add_system(Turns::increase_turns)
+        .add_system(bevy::window::close_on_esc)
         .run();
 }
 
-// For units
+fn setup(
+    mut commands: Commands,
+    mut meshes: ResMut<Assets<Mesh>>,
+    mut materials: ResMut<Assets<ColorMaterial>>,
+    asset_server: Res<AssetServer>,
+) {
+    // Camera
+    commands.spawn(Camera2dBundle::default());
 
-#[derive(Component)]
-pub struct Name(String);
-#[derive(Component)]
-pub struct Health(u32);
-#[derive(Component)]
-pub struct Strength(u32);
-#[derive(Component)]
-pub struct Range(u32);
-#[derive(Component)]
-pub struct Sight(u32);
-#[derive(Component)]
-pub struct Moves(u32);
-#[derive(Component)]
-pub enum Team {
-    Alliance,
-    Axis,
-}
+    // Map
 
-// For players
-
-#[derive(Component)]
-pub struct Soldier;
-#[derive(Component)]
-pub struct Civilian;
-#[derive(Component)]
-pub struct Player;
-
-// For the engine
-
-#[derive(Resource)]
-pub struct Turns(u32);
-
-impl Name {
-    fn new(name: &str) -> Self {
-        Name {
-            0: String::from(name),
-        }
-    }
-}
-impl Health {
-    fn new(hp: u32) -> Self {
-        Health { 0: hp }
-    }
-}
-impl Strength {
-    fn new(str: u32) -> Self {
-        Strength { 0: str }
-    }
-}
-impl Range {
-    fn new(rng: u32) -> Self {
-        Range { 0: rng }
-    }
-}
-impl Sight {
-    fn new(sight: u32) -> Self {
-        Sight { 0: sight }
-    }
-}
-impl Moves {
-    fn new(mvs: u32) -> Self {
-        Moves { 0: mvs }
-    }
-}
-
-fn spawn_soldier(mut commands: Commands) {
+    // Units
+    let (start_x, start_y, start_z) = (0.0, 10.0, 0.0);
     commands.spawn((
+        SpriteBundle {
+            transform: Transform {
+                translation: Vec3::new(start_x, start_y, start_z),
+                scale: UNIT_SIZE,
+                ..default()
+            },
+            sprite: Sprite {
+                color: FRIENDLY_COLOR,
+                ..default()
+            },
+            ..default()
+        },
         Soldier,
-        Name::new("Warrior"),
-        Health::new(100),
-        Strength::new(8),
-        Range::new(2),
-        Sight::new(2),
-        Moves::new(2),
-        Team::Alliance,
     ));
-}
-fn spawn_civilian(mut commands: Commands) {
-    commands.spawn((
-        Soldier,
-        Name::new("Worker"),
-        Health::new(10),
-        Range::new(2),
-        Sight::new(2),
-        Team::Alliance,
-    ));
-}
-
-impl Plugin for Player {
-    fn build(&self, app: &mut App) {
-        app.add_startup_system(spawn_soldier)
-            .add_startup_system(spawn_civilian);
-    }
 }
