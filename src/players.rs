@@ -16,14 +16,36 @@ impl Turns {
 #[derive(Component)]
 pub struct Player;
 impl Player {
-    pub fn take_turn(mut commands: Commands, keyboard_input: Res<Input<KeyCode>>) {
-        // get the player's inputs for this command!
+    pub fn take_turn(keyboard_input: Res<Input<KeyCode>>) {
+        for key in keyboard_input.get_just_pressed() {
+            match key {
+                KeyCode::N => Player::next_unit(),
+                KeyCode::C => Player::command_current(),
+                KeyCode::E => Player::end_turn(),
+                key => println!("{key:?}"),
+            };
+        }
+    }
+
+    fn spawn_player(mut commands: Commands) {
+        commands.spawn((Player, Team::Alliance));
+    }
+
+    fn next_unit() {
+        todo!()
+    }
+
+    fn command_current() {
+        todo!()
+    }
+
+    fn end_turn() {
+        todo!()
     }
 }
 impl Plugin for Player {
     fn build(&self, app: &mut App) {
-        app.add_startup_system(Soldier::spawn_allied_soldier)
-            .add_startup_system(Civilian::spawn_allied_civilian)
+        app.add_startup_system(Player::spawn_player)
             .add_system(Player::take_turn);
     }
 }
